@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>물리 상식 퀴즈</title>
+<style>
+  body{font-family:system-ui,"Malgun Gothic",sans-serif;background:#0f172a;display:flex;justify-content:center;padding:40px 16px;margin:0}
+  .card{background:#fff;max-width:540px;width:100%;border-radius:16px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+  h1{margin-top:0;font-size:22px}
+  .progress{color:#666;font-size:14px;margin-bottom:8px}
+  .bar{height:6px;background:#e2e8f0;border-radius:3px;margin-bottom:20px}
+  .bar div{height:100%;background:#6366f1;border-radius:3px;transition:width .3s}
+  .q{font-size:18px;margin-bottom:16px}
+  button.opt{display:block;width:100%;text-align:left;padding:12px 14px;margin-bottom:10px;border:2px solid #e2e8f0;border-radius:10px;background:#fff;font-size:16px;cursor:pointer}
+  button.opt:hover:not(:disabled){border-color:#6366f1}
+  button.correct{border-color:#22c55e!important;background:#dcfce7}
+  button.wrong{border-color:#ef4444!important;background:#fee2e2}
+  .exp{background:#f1f5f9;border-radius:10px;padding:10px 14px;margin:6px 0;font-size:15px;color:#334155}
+  .next,.restart{background:#6366f1;color:#fff;border:0;padding:12px 20px;border-radius:10px;font-size:16px;cursor:pointer;margin-top:6px}
+  .score{font-size:40px;text-align:center;margin:20px 0}
+</style>
+</head>
+<body>
+<div class="card" id="app"></div>
+<script>
+const quiz=[
+  {q:"진공에서 빛의 속도는 약 얼마일까?",o:["3만 km/s","30만 km/s","300만 km/s","3억 km/s"],a:1,e:"빛의 속도는 약 299,792 km/s, 즉 약 30만 km/s 입니다."},
+  {q:"뉴턴의 제1법칙(관성의 법칙)에 대한 설명으로 옳은 것은?",o:["힘이 없으면 물체는 반드시 멈춘다","힘이 작용하지 않으면 정지 또는 등속 운동을 유지한다","질량이 클수록 빨리 떨어진다","작용과 반작용은 크기가 다르다"],a:1,e:"외력이 없으면 물체는 현재의 운동 상태를 유지합니다."},
+  {q:"지구 표면에서의 중력가속도는 약 얼마일까?",o:["1.6 m/s²","3.7 m/s²","9.8 m/s²","24.8 m/s²"],a:2,e:"약 9.8 m/s² 입니다. (달은 약 1.6 m/s²)"},
+  {q:"소리가 전달되지 못하는 곳은?",o:["물속","쇠막대 안","공기 중","진공"],a:3,e:"소리는 매질이 필요한 파동이라 진공에서는 전달되지 않습니다."},
+  {q:"전압(V), 전류(I), 저항(R)의 관계를 나타낸 옴의 법칙은?",o:["V = I × R","V = I / R","V = I + R","V = R / I"],a:0,e:"옴의 법칙: V = IR."},
+  {q:"절대영도(0 K)는 섭씨 몇 도일까?",o:["-100℃","-173.15℃","-273.15℃","-373.15℃"],a:2,e:"0 K = -273.15℃ 입니다."}
+];
+let i=0,score=0;
+const app=document.getElementById("app");
+function show(){
+  if(i>=quiz.length){
+    app.innerHTML=`<h1>결과</h1><div class="score">${score} / ${quiz.length}</div>
+    <p style="text-align:center">${score===quiz.length?"물리 천재! 🎉":score>=4?"잘했어요! 👍":"조금만 더 공부해 봐요 💪"}</p>
+    <div style="text-align:center"><button class="restart" onclick="i=0;score=0;show()">다시 풀기</button></div>`;
+    return;
+  }
+  const c=quiz[i];
+  app.innerHTML=`<h1>⚛️ 물리 상식 퀴즈</h1>
+  <div class="progress">${i+1} / ${quiz.length}</div>
+  <div class="bar"><div style="width:${i/quiz.length*100}%"></div></div>
+  <div class="q">${c.q}</div>
+  ${c.o.map((t,k)=>`<button class="opt" data-k="${k}">${t}</button>`).join("")}
+  <div id="nx"></div>`;
+  const opts=app.querySelectorAll(".opt");
+  opts.forEach(b=>b.onclick=()=>{
+    const k=+b.dataset.k;
+    opts.forEach(x=>x.disabled=true);
+    opts[c.a].classList.add("correct");
+    if(k===c.a)score++;else b.classList.add("wrong");
+    document.getElementById("nx").innerHTML=`<div class="exp">💡 ${c.e}</div><button class="next">${i+1===quiz.length?"결과 보기":"다음"}</button>`;
+    document.querySelector(".next").onclick=()=>{i++;show()};
+  });
+}
+show();
+</script>
+</body>
+</html>
